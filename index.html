@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Agenda de Turnos</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 900px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .left {
+            width: 40%;
+            background: #1e293b;
+            color: white;
+            padding: 30px;
+        }
+
+        .left h1 {
+            margin-top: 0;
+        }
+
+        .right {
+            width: 60%;
+            padding: 30px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4facfe;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3b8eea;
+        }
+
+        .turno {
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .mañana {
+            background: #22c55e;
+        }
+
+        .tarde {
+            background: #f59e0b;
+        }
+
+        .noche {
+            background: #6366f1;
+        }
+
+        .delete {
+            background: red;
+            border: none;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="left">
+            <h1>Agenda de Turnos</h1>
+            <p>Sistema para gestionar horarios de trabajo de forma rápida y sencilla.</p>
+        </div>
+
+        <div class="right">
+            <h2>Nuevo Turno</h2>
+
+            <input type="text" id="nombre" placeholder="Nombre">
+
+            <select id="turno">
+                <option value="mañana">Mañana</option>
+                <option value="tarde">Tarde</option>
+                <option value="noche">Noche</option>
+            </select>
+
+            <input type="time" id="inicio">
+            <input type="time" id="fin">
+            <input type="date" id="fecha">
+
+            <button onclick="agregar()">Agregar Turno</button>
+
+            <h2>Turnos</h2>
+            <div id="lista"></div>
+
+        </div>
+
+    </div>
+
+    <script>
+        let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+
+        function guardar() {
+            localStorage.setItem("turnos", JSON.stringify(turnos));
+        }
+
+        function agregar() {
+            const nombre = document.getElementById("nombre").value;
+            const turno = document.getElementById("turno").value;
+            const inicio = document.getElementById("inicio").value;
+            const fin = document.getElementById("fin").value;
+            const fecha = document.getElementById("fecha").value;
+
+            if (!nombre || !inicio || !fin || !fecha) {
+                alert("Completa todo");
+                return;
+            }
+
+            turnos.push({ nombre, turno, inicio, fin, fecha });
+            guardar();
+            mostrar();
+        }
+
+        function eliminar(i) {
+            turnos.splice(i, 1);
+            guardar();
+            mostrar();
+        }
+
+        function mostrar() {
+            const lista = document.getElementById("lista");
+            lista.innerHTML = "";
+
+            turnos.forEach((t, i) => {
+                const div = document.createElement("div");
+                div.className = "turno";
+
+                div.innerHTML = `
+      <div>
+        <strong>${t.nombre}</strong><br>
+        ${t.fecha} | ${t.inicio} - ${t.fin}
+      </div>
+      <div>
+        <span class="badge ${t.turno}">${t.turno}</span>
+        <button class="delete" onclick="eliminar(${i})">X</button>
+      </div>
+    `;
+
+                lista.appendChild(div);
+            });
+        }
+
+        mostrar();
+    </script>
+
+</body>
+
+</html>
